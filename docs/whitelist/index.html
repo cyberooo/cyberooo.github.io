@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Whitelists &middot; U2-I2
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" -->
+  <script src="https://kit.fontawesome.com/59bd3f67e7.js" crossorigin="anonymous"></script>
+  
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-uq">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          U2-I2
+        </a>
+      </h1>
+      <p class="lead">An one-stop solution to explore user unresettable identifiers (UUIs) leakage on your Android smartphone.</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/about/">About</a>
+            
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/cve/">CVEs</a>
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/devices/">Devices</a>
+            
+          
+        
+      
+        
+          
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/toolkit/">Toolkit</a>
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item active" href="/whitelist/">Whitelists</a>
+            
+          
+        
+      
+      
+      <!--a class="sidebar-nav-item" href="https://github.com/cyberooo/u2i2/archive/v1.0.0.zip">Download</a-->
+      <!--a class="sidebar-nav-item" href="https://github.com/cyberooo/u2i2">GitHub project</a-->
+      <p>   </p><p>   </p>
+      <span class="sidebar-nav-item">Currently v1.0.0</span>
+    </nav>
+
+    <p>&copy; 2022. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="page">
+  <h1 class="page-title">Whitelists</h1>
+  <h2 id="preface">Preface</h2>
+
+<p>We found 3 whitelisting issues from our tested devices. All the caught whitelisting issues lack a comprehensive caller fingerprint validation mechanism, so that any app with a package name appeared in the whitelist can bypass the permission mechanism and access sensitive user information.</p>
+
+<ol>
+<li> In the devices of Huawei (A10), 253 apps are whitelisted
+for chip and cellular UUIs (UUIs #1-4). They are from
+various categories such as online shopping, online travel
+agents, food delivery, and productivity.</li>
+<li> In the devices of Oppo (D10,11), 272 apps are whitelisted
+for background access to GPS location. They include
+leading apps for transportation, food delivery and ridehailing,
+and so on. They are all system apps or apps
+developed by the manufacturer, such as app store, theme
+app, launcher app and mobile wallet. All their package
+names are hardcoded in the OS image.</li>
+<li> In the devices of Oppo (D10,11) and Vivo (G10), 3 map
+apps are whitelisted for WiFi connection details (SSID
+and BSSID). Their package names are also hardcoded in
+the OS image.</li>
+</ol>
+
+<h2 id="a-case-study">A Case Study</h2>
+
+<p>Among the 3 whitelisting issues, the one found in Huawei’s device involves the most number of permissions and allows the highest number of apps, too. Therefore, we disclose more details of that issue here.</p>
+
+<h4 id="whitelisting-documents">Whitelisting Documents</h4>
+
+<p>We search relevant documents on the Internet to support our finding, and we successfully find one webpage hosted in Huawei’s developers community website, saying that the whitelisting mechanism is intentionally introduced for bring convenience to device users to avoid too many bothering user-clicking actions to allow certain runtime permissions.<br />
+We reported this issue to Huawei and then received the acknowledgment of the issue. The webpage has been later taken down by Huawei. We keep a copy of the <a href="/docs/public/huawei-whitelist-documentation-snapshot-20-Jul-2021.pdf" target="_blank"><strong>webpage snapshot</strong></a> that describes the whitelisting mechanism (in Chinese).</p>
+
+<p><img src="/docs/public/huawei-whitelist-documentation.jpg" alt="Webpage snapshot in Chinese" width="600" /></p>
+
+<h4 id="whitelisting-implementation">Whitelisting Implementation</h4>
+
+<p>We dump the image of our invloved tested devices and analyze how the whitelisting mechanism is implemented.<br />
+We find the source of whitelisting mechanism is in a class named <em>TelephonyPermissions</em>, in which a vendor modification over the original AOSP is made. As the result, all the permission checking against caller’s identity is compromised as long as the caller’s package name appears in the pre-defined whitelist.<br />
+We present the technical details in <a href="/docs/public/technical-demo.pdf" target="_blank"><strong>slides</strong></a> attached on this site.</p>
+
+<p><img src="/docs/public/technical-demo.jpg" alt="Demo slides of how the whitelisting mechanism is implemented" width="600" /></p>
+
+<h4 id="whitelisting-apps">Whitelisting Apps</h4>
+
+<p>From the dumped image we also perform a text search and eventually find the list of <em>whitelisted apps</em> from a XML resource file.<br />
+Within the XML file, there are lists of apps’ package names defined in a <em>string-array</em> data structure. We find there are <em>162</em>  and <em>253</em> apps are defined as <em>“system apps”</em> and <em>“whitelisted app”</em>, respectively.<br />
+We attach the partial content of the XML file on this site, you can click <a href="/docs/public/whitelisted-app.xml" target="_blank"><strong>here</strong></a> to download it.</p>
+
+<p><img src="/docs/public/whitelisted-app.jpg" alt="The XML file contains the whitelisted apps' package names" width="600" /></p>
+
+<p class="message">
+<b>Claim of Responsible Disclose</b>
+<br />
+All the three whitelisting issues, including the one shown in the case study above, have been acknowledged and fixed by the OEMs. At the moment of this was disclosed, all the devices of involved OEMs that have installed the latest OS and security patches are free from the whitelisting risk.  
+</p>
+
+</div>
+
+    </div>
+
+  </body>
+</html>
