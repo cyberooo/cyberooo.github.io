@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="https://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Undocumented Channels &middot; U2-I2
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" -->
+  <script src="https://kit.fontawesome.com/59bd3f67e7.js" crossorigin="anonymous"></script>
+  
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-uq">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          U2-I2
+        </a>
+      </h1>
+      <p class="lead">An one-stop solution to explore user unresettable identifiers (UUIs) leakage on your Android smartphone.</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/cve/">CVEs</a>
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/devices/">Devices</a>
+            
+          
+        
+      
+        
+          
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/toolkit/">Toolkit</a>
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item active" href="/undoc_channels/">Undocumented Channels</a>
+            
+          
+        
+      
+        
+          
+            
+              <a class="sidebar-nav-item" href="/whitelist/">Whitelists</a>
+            
+          
+        
+      
+      
+      <!--a class="sidebar-nav-item" href="https://github.com/cyberooo/u2i2/archive/v1.0.0.zip">Download</a-->
+      <!--a class="sidebar-nav-item" href="https://github.com/cyberooo/u2i2">GitHub project</a-->
+      <!--span class="sidebar-nav-item">Currently v1.0.0</span-->
+      <style>
+        .bottom-three {
+           margin-bottom: 2cm;
+        }
+      </style>
+      <p class="bottom-three"></p>
+    </nav>
+
+    <p>&copy; 2022. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="page">
+  <h1 class="page-title">Undocumented Channels</h1>
+  <p class="message">
+Please refer to the NDSS paper for more details of both the documented and undocumented access channels, i.e., system properties, system settings, and system services, and how the local and remote context jointly serves the API invocation. 
+</p>
+
+<p>This webpage demonstrates a case study of our static analysis of AOSP 10 OS image for the purpose of undocumented access channel exploration.</p>
+
+<p>Our exploration of undocumented access channels are based on the known APIs of UUI access. 
+Given the 6 UUIs, we sort the corresponding APIs according to the Android developer community website. Those APIs will be treated as the entry points of our following static analysis. 
+We also remark that it is conventional that Android OS serves the API invocation via (system) services mechanism. Therefore we also retrieve the names of system services that are in charge of serving the API invocation at the remote side.
+The list of APIs is shown below:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>UUI</th>
+      <th>Developers API Name(s)</th>
+      <th>System Service(s) Involved</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Serial</td>
+      <td>android.os.Build.getSerial()</td>
+      <td>device_identifiers</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Device ID/IMEI/MEID</td>
+      <td>android.telephony.TelephonyManager.getImei()</td>
+      <td>phone</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Device ID/IMEI/MEID</td>
+      <td>android.telephony.TelephonyManager.getDeviceId()</td>
+      <td>phone</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Device ID/IMEI/MEID</td>
+      <td>android.telephony.TelephonyManager.getMeid()</td>
+      <td>phone</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ICCID</td>
+      <td>android.telephony.TelephonyManager.getSimSerialNumber()</td>
+      <td>phone</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>ICCID</td>
+      <td>android.telephony.SubscriptionInfo.getIccId()</td>
+      <td>isub</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>IMSI</td>
+      <td>android.telephony.TelephonyManager.getSubscriberId()</td>
+      <td>phone</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Bluetooth MAC</td>
+      <td>android.bluetooth.BluetoothAdapter.getAddress()</td>
+      <td>bluetooth_manager</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>WiFi MAC</td>
+      <td>android.net.wifi.WifiInfo.getMacAddress()</td>
+      <td>wifi</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="our-static-analysis">Our static analysis</h3>
+
+<p>We use <a href="http://soot-oss.github.io/soot/" target="_blank"><b>Soot</b> (ver 2.5.0)</a> to construct the call graph of API invocation in both the local and remote context. 
+Considering the construction of call graph is a very complicated process that covers a hugh code repository (of AOSP) and takes a long time to execute, we prepare a sample toy project that only contains simplified classes that appears in the call traces of specific API invocation.</p>
+
+<p>Next, we take the getImei() and getSerial() as examples and demonstrate how the static analysis facilitates our exploration of potential undocumented access channels. The sample project is exported to 3 runnable JAR files, which extract the call graph of the local context of getImei() <a href="/docs/public/jars/local-imei.jar" target="_blank">[<strong>link to download</strong>]</a>, the remote context of getImei() <a href="/docs/public/jars/remote-imei.jar" target="_blank">[<strong>link to download</strong>]</a>, and the remote context of getSerial() <a href="/docs/public/jars/remote-serial.jar" target="_blank">[<strong>link to download</strong>]</a>, respectively.</p>
+
+<p>Alternatively, you can also download the source code of our sample project <a href="/docs/public/analysis_project/SootCGAnalyzer.zip" target="_blank">[<strong>Zip file</strong>]</a>. If you are using eclipse IDE, you need to relink all dependable libraries provided in the zip file and then you should be able to run the project easily, like the snapshot below shows.</p>
+
+<p><img src="/snapshots/analysis/eclipse_ide.jpg" alt="A snapshot of our static analysis sample project" width="600" /></p>
+
+<p class="message">
+The attached JAR files have all dependable library included and therefore are theoritically runnable on any OS with JRE installed. A successful execution of them generates a "dot" file in the same directory, which can be viewed by GraphViz or any alternative software.
+</p>
+
+<h3 id="call-graph-in-the-local-context">Call graph in the local context</h3>
+
+<p>We first write a simple Java script (named <em>EntryPoint.java</em>) to invoke the getImei() APIs of the TelephonyManager class. Then we use Soot to take our Java script as the entry point (the object of analysis), analysis the call trace and generate a call graph in <em>dot</em> file format.</p>
+
+<p>The image attached below is the <em>simplified</em> call graph generated by our project, showing how the Android OS handles the TelephonyManager.getImei() in the local context (from API class to the proxy of a system service stub). To control the size of call graph, we remove the unnecessary components within the API functions and initialization of Java objects (e.g., “java.lang.Object: void&lt;clinit&gt;()”) from the generated dot file. The graph is presented by GVEdit of <a href="https://graphviz.org/" target="_blank">[<strong>GraphViz</strong>]</a>.</p>
+
+<p><img src="/docs/public/callgraphs/simplified_local_context_getimei.png" alt="The (simplified) call graph of getImei() in the local context" width="900" />
+(Click [<a href="/docs/public/callgraphs/simplified_local_context_getimei.png" target="_blank"><strong>simplified version</strong></a> or <a href="/docs/public/callgraphs/local_context_getimei.png" target="_blank"><strong>complete version</strong></a>] to view the original image in full size)</p>
+
+<h3 id="call-graph-in-the-remote-context">Call graph in the remote context</h3>
+
+<p>Next, we take the getImei() defined in the stub class as the entry point and continue constructing the call graph in the remote context. We eventually find the getImei() is overrode in a class named “PhoneInterfaceManager”. Although the call graph does not further trace where the IMEI data is retrieved, we can still search the AOSP code repository and find the getImei() function is finally implemented in a class called “GsmCdmaPhone”. The <em>simplified</em> call graph in the remote context is show below.</p>
+
+<p><img src="/docs/public/callgraphs/simplified_remote_context_getimei.png" alt="The (simplified) call graph of getImei() in the remote context" width="900" />
+(Click [<a href="/docs/public/callgraphs/simplified_remote_context_getimei.png" target="_blank"><strong>simplified version</strong></a> or <a href="/docs/public/callgraphs/remote_context_getimei.png" target="_blank"><strong>complete version</strong></a>] to view the original image in full size)</p>
+
+<p>Through this case we find the IMEI is eventually served by a class in the remote context through a system service called ``phone’’, and therefore, we identify the system service as one of undocumented access channel based on an assumption that, we may find other UUIs through exhaustively calling the public interfaces defined in those active system services.</p>
+
+<p>Next, we use another case, i.e., Build.getSerial(), to briefly demonstrate how another undocumented channel, system properties, is identifed.</p>
+
+<h3 id="another-example-buildgetserial">Another example (Build.getSerial())</h3>
+
+<p>We omit the handling of API at the local side and only present how the system service (<em>device_identifiers</em>) serve the UUI access. Our observation shows that the call graph ends in a class named SystemProperties and then the OS passes the remaining invocation to its native context. We regard the SystemProperties class is used to handle the access of system properties of Android OS, therefore, we add the system properties as another undocumented access channel.</p>
+
+<p><img src="/docs/public/callgraphs/simplified_remote_context_getserial.png" alt="The (simplified) call graph of getSerial() in the remote context" width="900" />
+(Click [<a href="/docs/public/callgraphs/simplified_remote_context_getserial.png" target="_blank"><strong>simplified version</strong></a> or <a href="/docs/public/callgraphs/remote_context_getserial.png" target="_blank"><strong>complete version</strong></a>] to view the original image in full size)</p>
+
+</div>
+
+    </div>
+
+  </body>
+</html>
