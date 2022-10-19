@@ -16,15 +16,15 @@
   </title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="/public/css/custom.css">
-  <link rel="stylesheet" href="/public/css/poole.css">
-  <link rel="stylesheet" href="/public/css/syntax.css">
-  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="/u2i2/public/css/custom.css">
+  <link rel="stylesheet" href="/u2i2/public/css/poole.css">
+  <link rel="stylesheet" href="/u2i2/public/css/syntax.css">
+  <link rel="stylesheet" href="/u2i2/public/css/hyde.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
   <!-- Icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/public/favicon.ico">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/u2i2/public/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/u2i2/public/favicon.ico">
   <!-- link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" -->
   <script src="https://kit.fontawesome.com/59bd3f67e7.js" crossorigin="anonymous"></script>
   
@@ -39,7 +39,7 @@
   <div class="container sidebar-sticky">
     <div class="sidebar-about">
       <h1>
-        <a href="/">
+        <a href="/u2i2/">
           U2-I2
         </a>
       </h1>
@@ -47,7 +47,7 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a class="sidebar-nav-item" href="/">Home</a>
+      <a class="sidebar-nav-item" href="/u2i2/">Home</a>
 
       
 
@@ -66,7 +66,7 @@
         
           
             
-              <a class="sidebar-nav-item" href="/cve/">CVEs</a>
+              <a class="sidebar-nav-item" href="/u2i2//cve/">CVEs</a>
             
           
         
@@ -74,7 +74,7 @@
         
           
             
-              <a class="sidebar-nav-item" href="/devices/">Devices</a>
+              <a class="sidebar-nav-item" href="/u2i2//devices/">Devices</a>
             
           
         
@@ -88,7 +88,7 @@
         
           
             
-              <a class="sidebar-nav-item" href="/toolkit/">Toolkit</a>
+              <a class="sidebar-nav-item" href="/u2i2//toolkit/">Toolkit</a>
             
           
         
@@ -96,16 +96,12 @@
         
           
             
-              <a class="sidebar-nav-item" href="/undoc_channels/">Undocumented Channels</a>
+              <a class="sidebar-nav-item" href="/u2i2//undoc_channels/">Undocumented Channels</a>
             
           
         
       
         
-          
-            
-              <a class="sidebar-nav-item active" href="/whitelist/">Whitelists</a>
-            
           
         
       
@@ -127,8 +123,9 @@
 
 
     <div class="content container">
-      <div class="page">
-  <h1 class="page-title">Whitelists</h1>
+      <div class="post">
+  <h1 class="post-title">Whitelists</h1>
+  <span class="post-date"></span>
   <h2 id="preface">Preface</h2>
 
 <p>We found 3 whitelisting issues from our tested devices. All the caught whitelisting issues lack a comprehensive caller fingerprint validation mechanism, so that any app with a package name appeared in the whitelist can bypass the permission mechanism and access sensitive user information.</p>
@@ -157,26 +154,27 @@ the OS image.</li>
 
 <h4 id="whitelisting-documents">Whitelisting Documents</h4>
 
-<p>We search relevant documents on the Internet to support our finding, and we successfully find one webpage hosted in Huawei’s developers community website, saying that the whitelisting mechanism is intentionally introduced for bring convenience to device users to avoid too many bothering user-clicking actions to allow certain runtime permissions.<br />
-We reported this issue to Huawei and then received the acknowledgment of the issue. The webpage has been later taken down by Huawei. We keep a copy of the <a href="/docs/public/huawei-whitelist-documentation-snapshot-20-Jul-2021.pdf" target="_blank"><strong>webpage snapshot</strong></a> that describes the whitelisting mechanism (in Chinese).</p>
+<p>We search relevant documents on the Internet to support our finding, and we successfully find one webpage hosted in Huawei’s developers community website <a href="/u2i2//docs/public/whitelist-snapshot.pdf" target="_blank">(<em>snapshot</em>)</a>, saying that the whitelisting mechanism is intentionally introduced for bring convenience to device users to avoid too many bothering user-clicking actions to allow certain runtime permissions.</p>
 
-<p><img src="/docs/public/huawei-whitelist-documentation.jpg" alt="Webpage snapshot in Chinese" width="600" /></p>
+<!--We reported this issue to Huawei and then received the acknowledgment of the issue. The webpage has been later taken down by Huawei. We keep a copy of the [**webpage snapshot** (20 Jul 2021)](/u2i2//docs/public/huawei-whitelist-documentation-snapshot-20-Jul-2021.pdf){:target="_blank"} that describes the whitelisting mechanism (in Chinese).-->
+
+<!-- img src="/u2i2//docs/public/huawei-whitelist-documentation.jpg" alt="Webpage snapshot in Chinese" width="600"/-->
 
 <h4 id="whitelisting-implementation">Whitelisting Implementation</h4>
 
 <p>We dump the image of our invloved tested devices and analyze how the whitelisting mechanism is implemented.<br />
 We find the source of whitelisting mechanism is in a class named <em>TelephonyPermissions</em>, in which a vendor modification over the original AOSP is made. As the result, all the permission checking against caller’s identity is compromised as long as the caller’s package name appears in the pre-defined whitelist.<br />
-We present the technical details in <a href="/docs/public/technical-demo.pdf" target="_blank"><strong>slides</strong></a> attached on this site.</p>
+We present the technical details in <a href="/u2i2//docs/public/technical-demo.pdf" target="_blank"><strong>slides</strong></a> attached on this site.</p>
 
-<p><img src="/docs/public/technical-demo.jpg" alt="Demo slides of how the whitelisting mechanism is implemented" width="600" /></p>
+<p><img src="/u2i2//docs/public/technical-demo.jpg" alt="Demo slides of how the whitelisting mechanism is implemented" width="600" /></p>
 
 <h4 id="whitelisting-apps">Whitelisting Apps</h4>
 
 <p>From the dumped image we also perform a text search and eventually find the list of <em>whitelisted apps</em> from a XML resource file.<br />
 Within the XML file, there are lists of apps’ package names defined in a <em>string-array</em> data structure. We find there are <em>162</em>  and <em>253</em> apps are defined as <em>“system apps”</em> and <em>“whitelisted app”</em>, respectively.<br />
-We attach the partial content of the XML file on this site, you can click <a href="/docs/public/whitelisted-app.xml" target="_blank"><strong>here</strong></a> to download it.</p>
+We attach the partial content of the XML file on this site, you can click <a href="/u2i2//docs/public/whitelisted-app.xml" target="_blank"><strong>here</strong></a> to download it.</p>
 
-<p><img src="/docs/public/whitelisted-app.jpg" alt="The XML file contains the whitelisted apps' package names" width="600" /></p>
+<!--img src="/u2i2//docs/public/whitelisted-app.jpg" alt="The XML file contains the whitelisted apps' package names" width="600"/-->
 
 <p class="message">
 <b>Claim of Responsible Disclose</b>
@@ -184,6 +182,13 @@ We attach the partial content of the XML file on this site, you can click <a hre
 All the three whitelisting issues, including the one shown in the case study above, have been acknowledged and fixed by the OEMs. At the moment of this was disclosed, all the devices of involved OEMs that have installed the latest OS and security patches are free from the whitelisting risk.  
 </p>
 
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+  </ul>
 </div>
 
     </div>
